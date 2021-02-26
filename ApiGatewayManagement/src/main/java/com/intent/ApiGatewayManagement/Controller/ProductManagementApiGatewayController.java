@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.intent.ApiGatewayManagement.Response.Response;
 import com.intent.ApiGatewayManagement.view.ProductDetailsView;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 
 @RestController
 @RequestMapping("/api/product/management")
@@ -27,8 +28,13 @@ public class ProductManagementApiGatewayController {
 	}
 
 	@GetMapping("/list")
+	@HystrixCommand(fallbackMethod = "getFallBackResponse")
 	public Response getproductList() {	
 		return restTemplate.getForObject("http://product-management/product/management/list", Response.class);
+	}
+	
+	public Response getFallBackResponse() {	
+		return new Response(500, "some thing went wrong ");
 	}
 	
 }	
